@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Project;
 use App\Models\Team;
+use App\Models\Pivit;
 use Illuminate\Console\Command;
 
 class FakeData extends Command
@@ -32,21 +33,31 @@ class FakeData extends Command
         echo "Truncating...\n";
         Project::truncate();
         Team::truncate();
+        Pivit::truncate();
         $team = Team::create();
+        $pivit = Pivit::create();
+        $team->pivit_id = $pivit->_id;
+        $team->save();
 
-        echo "Preparing\n";
+        echo "Preparing...\n";
 
         $milion = 1;
-        $loop = $milion * 1000000;
+        $loop = $milion * 100;
         $data = [];
         ini_set('memory_limit', '-1');
         $data = array();
 
-        for ($i = 0; $i < $loop; $i++) {
-            array_push($data, ['name' => 'Test' . $i, 'team_id'=> $team->_id]);
+         for ($i = 0; $i < $loop; $i++) {
+            $project = Project::create();
+            $project->pivits()->attach($pivit);
+            // $pivit->projects()->attach($project);
         }
-        echo "Inserting...\n";
-        Project::insert($data);
-        echo "Completed\n";
+
+        // for ($i = 0; $i < $loop; $i++) {
+        //     array_push($data, ['name' => 'Test' . $i);
+        // }
+        // echo "Inserting...\n";
+        // Project::insert($data);
+        // echo "Completed\n";
     }
 }
